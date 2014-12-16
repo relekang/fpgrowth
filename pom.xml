@@ -41,9 +41,9 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git@github.com:relekang/storm-arm.git</connection>
-        <url>scm:git:git@github.com:relekang/storm-arm.git</url>
-        <developerConnection>scm:git:git@github.com:relekang/storm-arm.git</developerConnection>
+        <connection>scm:git:git@github.com:relekang/fpgrowth.git</connection>
+        <url>scm:git:git@github.com:relekang/fpgrowth.git</url>
+        <developerConnection>scm:git:git@github.com:relekang/fpgrowth.git</developerConnection>
     </scm>
 
     <dependencies>
