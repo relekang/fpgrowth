@@ -1,0 +1,2 @@
+tasks:
+ - mvn -B test
