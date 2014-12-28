@@ -12,34 +12,30 @@ public class FPGrowth {
             System.out.println("FPGrowth take exactly two arguments");
             System.exit(1);
         }
-        ArrayList<int[]> transactions = new ArrayList<int[]>();
         System.out.println("Running FPGrowth on file: " + args[0]);
         double minSupport = Double.parseDouble(args[1]);
         File file = new File(args[0]);
-        FileReader fileReader = null;
-        BufferedReader bufferedReader = null;
+        Preprocessor preprocessor = new DefaultPreprocessor();
         try {
-            fileReader = new FileReader(file);
-            bufferedReader = new BufferedReader(fileReader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                transactions.add(parseTransactionString(line));
-            }
-            bufferedReader.close();
+            FileReader fileReader = new FileReader(file);
+            preprocessor.loadDataFile(fileReader);
             fileReader.close();
+            System.out.println("Preprocessed the file.");
         } catch (FileNotFoundException e) {
-            System.out.println("Could not find the file");
+            System.out.println("Could not find the file.");
             System.exit(1);
         } catch (IOException e) {
-            System.out.println("Could not read the file");
+            System.out.println("Could not read the file.");
             System.exit(1);
         }
 
-        Map<Integer, Integer> oneItemsetCounts = getOneItemsetCounts(transactions);
-        System.out.println(findFrequentItemsetWithSuffix(
-            buildFPTree(transactions, oneItemsetCounts, true, minSupport),
-            new ArrayList<Integer>(),
-            ((int) minSupport * transactions.size())
+        Map<Integer, Integer> oneItemsetCounts = getOneItemsetCounts(preprocessor.getTransactions());
+        System.out.println(preprocessor.getFrequentItemsetWithLabels(
+            findFrequentItemsetWithSuffix(
+                buildFPTree(preprocessor.getTransactions(), oneItemsetCounts, true, minSupport),
+                new ArrayList<Integer>(),
+                ((int) minSupport * preprocessor.getTransactions().size())
+            )
         ));
     }
 
@@ -105,15 +101,5 @@ public class FPGrowth {
         }
         return frequentItemset;
     }
-
-    public static int[] parseTransactionString(String str) {
-        String[] strArray = str.split(" ");
-        int[] transaction = new int[strArray.length];
-        for (int i = 0; i < strArray.length; i++) {
-            transaction[i] = Integer.parseInt(strArray[i]);
-        }
-        return transaction;
-    }
-
 
 }
