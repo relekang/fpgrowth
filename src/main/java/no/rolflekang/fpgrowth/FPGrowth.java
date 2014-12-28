@@ -58,22 +58,7 @@ public class FPGrowth {
 
     public static FPTree buildFPTree(List<int[]> transactions, Map<Integer, Integer> oneItemsetCounts, boolean pruneBeforeInsert, double minSupport) {
         FPTree tree = new FPTree();
-        return addToFPTree(tree, transactions, oneItemsetCounts, pruneBeforeInsert, minSupport);
-    }
-
-    public static FPTree addToFPTree(FPTree tree, List<int[]> transactions, Map<Integer, Integer> oneItemsetCounts, boolean pruneBeforeInsert, double minSupport) {
-        for (int[] transaction : transactions) {
-            List<Integer> frequent = new ArrayList<Integer>();
-            transaction = sortTransaction(transaction, oneItemsetCounts);
-            for (int item : transaction) {
-                if (!pruneBeforeInsert || oneItemsetCounts.get(item) / (double) transactions.size() >= minSupport) {
-                    frequent.add(item);
-                } else {
-                    break;
-                }
-            }
-            tree.addTransaction(frequent);
-        }
+        tree.addTransactions(transactions, oneItemsetCounts, pruneBeforeInsert, minSupport);
         return tree;
     }
 

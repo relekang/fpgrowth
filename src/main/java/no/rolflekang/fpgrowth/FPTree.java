@@ -5,6 +5,8 @@ import org.apache.commons.lang3.SerializationUtils;
 import java.io.*;
 import java.util.*;
 
+import static no.rolflekang.fpgrowth.FPGrowth.sortTransaction;
+
 public class FPTree implements Serializable {
     private FPNode root;
     private Map<Integer, FPNode> headerTable;
@@ -40,12 +42,27 @@ public class FPTree implements Serializable {
         numberOfTransactions += 1;
     }
 
+    public void addTransactions(List<int[]> transactions, Map<Integer, Integer> oneItemsetCounts, boolean pruneBeforeInsert, double minSupport) {
+        for (int[] transaction : transactions) {
+            List<Integer> frequent = new ArrayList<Integer>();
+            transaction = sortTransaction(transaction, oneItemsetCounts);
+            for (int item : transaction) {
+                if (!pruneBeforeInsert || oneItemsetCounts.get(item) / (double) transactions.size() >= minSupport) {
+                    frequent.add(item);
+                } else {
+                    break;
+                }
+            }
+            addTransaction(frequent);
+        }
+    }
+
     private void updateNeighbors(FPNode node) {
         FPNode head = headerTable.get(node.getItem());
         if (head == null) {
             headerTable.put(node.getItem(), node);
         } else {
-            while(head.hasNeighbor()) {
+            while (head.hasNeighbor()) {
                 head = head.getNeighbor();
             }
             head.setNeighbor(node);
@@ -80,9 +97,9 @@ public class FPTree implements Serializable {
 
     public List<List<FPNode>> getPrefixPaths(int item) {
         List<List<FPNode>> prefixPaths = new ArrayList<List<FPNode>>();
-        for(FPNode node:getNodes(item)) {
+        for (FPNode node : getNodes(item)) {
             List<FPNode> path = new ArrayList<FPNode>();
-            while(node != null && !node.isRoot()){
+            while (node != null && !node.isRoot()) {
                 path.add(node);
                 node = node.getParent();
             }
@@ -96,7 +113,7 @@ public class FPTree implements Serializable {
         List<FPNode> nodes = new ArrayList<FPNode>();
         FPNode node = headerTable.get(item);
         nodes.add(node);
-        while(node.hasNeighbor()){
+        while (node.hasNeighbor()) {
             node = node.getNeighbor();
             nodes.add(node);
         }
@@ -105,7 +122,7 @@ public class FPTree implements Serializable {
 
     public Map<Integer, List<FPNode>> getItems() {
         Map<Integer, List<FPNode>> itemMap = new HashMap<Integer, List<FPNode>>();
-        for(Integer item: headerTable.keySet()){
+        for (Integer item : headerTable.keySet()) {
             itemMap.put(item, getNodes(item));
         }
         return itemMap;
@@ -120,22 +137,22 @@ public class FPTree implements Serializable {
         return str;
     }
 
-    public static FPTree conditionalTree(List<List<FPNode>> paths, int minSupport){
+    public static FPTree conditionalTree(List<List<FPNode>> paths, int minSupport) {
         FPTree tree = new FPTree();
         Set<Integer> items = new HashSet<Integer>();
         Integer conditionItem = null;
-        for(List<FPNode> path:paths){
+        for (List<FPNode> path : paths) {
             FPNode point = tree.getRoot();
             if (conditionItem == null) {
                 conditionItem = path.get(path.size() - 1).getItem();
             }
 
-            for(FPNode node:path){
+            for (FPNode node : path) {
                 FPNode nextPoint = point.getChild(node.getItem());
-                if(nextPoint == null){
+                if (nextPoint == null) {
                     items.add(node.getItem());
                     int count;
-                    if(node.getItem() == conditionItem) {
+                    if (node.getItem() == conditionItem) {
                         count = node.getCount();
                     } else {
                         count = 0;
@@ -148,20 +165,20 @@ public class FPTree implements Serializable {
             }
         }
 
-        for(List<FPNode> path:tree.getPrefixPaths(conditionItem)) {
+        for (List<FPNode> path : tree.getPrefixPaths(conditionItem)) {
             Integer count = path.get(path.size() - 1).getCount();
-            for (int i = path.size() - 1; i >= 0 ; i--) {
+            for (int i = path.size() - 1; i >= 0; i--) {
                 FPNode node = path.get(i);
                 node.incrementCount(count);
             }
         }
 
-        for(Integer item:items) {
+        for (Integer item : items) {
             int support = 0;
-            for(FPNode node:tree.getNodes(item)) {
+            for (FPNode node : tree.getNodes(item)) {
                 support += node.getCount();
             }
-            for(FPNode node:tree.getNodes(item)) {
+            for (FPNode node : tree.getNodes(item)) {
                 if (support < minSupport) {
                     if (node.hasParent()) {
                         node.getParent().removeChild(node);
@@ -170,8 +187,8 @@ public class FPTree implements Serializable {
             }
         }
 
-        for(FPNode node:tree.getNodes(conditionItem)) {
-            if(node.hasParent()) {
+        for (FPNode node : tree.getNodes(conditionItem)) {
+            if (node.hasParent()) {
                 node.getParent().removeChild(node);
             }
         }
