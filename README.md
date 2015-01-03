@@ -1,4 +1,4 @@
-# FPGrowth [![Build status](https://ci.frigg.io/badges/relekang/fpgrowth/)](https://ci.frigg.io/relekang/fpgrowth/last/)
+# FPGrowth [![Build status](https://ci.frigg.io/badges/relekang/fpgrowth/)](https://ci.frigg.io/relekang/fpgrowth/last/)[![Coverage status](https://ci.frigg.io/badges/coverage/relekang/fpgrowth/)](https://ci.frigg.io/relekang/fpgrowth/last/)
 A java implementation of the FPGrowth algorithm
 
 ## Usage

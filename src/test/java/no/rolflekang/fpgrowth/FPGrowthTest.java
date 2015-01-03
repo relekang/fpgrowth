@@ -17,18 +17,10 @@ public class FPGrowthTest {
     @Before
     public void setUp() {
         transactions = new ArrayList<int[]>();
-        transactions.add(FPGrowth.parseTransactionString("1 2 3"));
-        transactions.add(FPGrowth.parseTransactionString("1 2 3 4"));
-        transactions.add(FPGrowth.parseTransactionString("2 3 5"));
-        transactions.add(FPGrowth.parseTransactionString("1 3 4 5"));
-    }
-
-    @Test
-    public void testParseTransactions() {
-        assertArrayEquals(new int[]{1, 2, 3}, transactions.get(0));
-        assertArrayEquals(new int[]{1, 2, 3, 4}, transactions.get(1));
-        assertArrayEquals(new int[]{2, 3, 5}, transactions.get(2));
-        assertArrayEquals(new int[]{1, 3, 4, 5}, transactions.get(3));
+        transactions.add(new int[]{1, 2, 3});
+        transactions.add(new int[]{1, 2, 3, 4});
+        transactions.add(new int[]{2, 3, 5});
+        transactions.add(new int[]{1, 3, 4, 5});
     }
 
     @Test

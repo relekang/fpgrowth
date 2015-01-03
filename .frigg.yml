@@ -1,2 +1,6 @@
 tasks:
- - mvn -B test
+ - mvn -B cobertura:cobertura
+
+coverage:
+  path: target/site/cobertura/coverage.xml
+  parser: cobertura
